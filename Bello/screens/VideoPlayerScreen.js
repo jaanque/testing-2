@@ -1,15 +1,15 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Video } from 'expo-video'; // Changed import from expo-av to expo-video
+import { Video } from 'expo-video';
 import * as FileSystem from 'expo-file-system';
 
 const VideoPlayerScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const videoRef = useRef(null); // Still useful for manual controls if needed in future
+  const videoRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(true); // For shouldPlay/autoplay
+  const [isPlaying, setIsPlaying] = useState(true);
 
   const { videoUri, videoDate, filename, title } = route.params;
   const displayTitle = title || filename || 'Video';
@@ -58,31 +58,17 @@ const VideoPlayerScreen = () => {
             ref={videoRef}
             style={styles.videoPlayer}
             source={{ uri: videoUri }}
-            controls={true} // expo-video uses 'controls' instead of 'useNativeControls'
-            resizeMode="contain" // expo-video uses string literals
-            autoplay={isPlaying} // expo-video uses 'autoplay'
-
-            onLoadStart={() => {
-              console.log(`VideoPlayer: onLoadStart - ${videoUri}`);
-              setIsLoading(true);
-            }}
-            onReadyForDisplay={() => { // A more specific event for when it's ready
-              console.log("VideoPlayer: onReadyForDisplay");
-              setIsLoading(false);
-            }}
-            onLoad={(status) => { // General load event, status might have duration etc.
-              console.log("VideoPlayer: onLoad, status:", status);
-              setIsLoading(false); // Should be ready if this fires without error
-            }}
+            controls={true}
+            resizeMode="contain"
+            autoplay={isPlaying}
+            onLoadStart={() => setIsLoading(true)}
+            onReadyForDisplay={() => setIsLoading(false)}
+            onLoad={(status) => setIsLoading(false)}
             onError={(error) => {
-              console.error("VideoPlayer: onError:", error.message, error.code, error.nativeStack);
               setIsLoading(false);
               Alert.alert("Playback Error", `Could not play this video. ${error.message}`);
             }}
-            onEnd={() => {
-              console.log("VideoPlayer: onEnd - Video finished playing");
-              // No specific action needed here as native controls handle replay etc.
-            }}
+            onEnd={() => { /* Video finished */ }}
           />
         )}
       </View>
@@ -94,10 +80,10 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: 'black' },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 10, backgroundColor: 'rgba(0,0,0,0.3)' },
   backButton: { paddingHorizontal: 5 },
-  backButtonText: { color: '#007AFF', fontSize: 17, fontFamily: 'Inter-Regular' },
-  videoTitle: { color: 'white', fontSize: 17, fontWeight: '600', textAlign: 'center', marginHorizontal: 5, flexShrink: 1, fontFamily: 'Inter-SemiBold' },
+  backButtonText: { color: '#007AFF', fontSize: 17 }, // Removed fontFamily
+  videoTitle: { color: 'white', fontSize: 17, fontWeight: '600', textAlign: 'center', marginHorizontal: 5, flexShrink: 1 }, // Removed fontFamily
   deleteButton: { paddingHorizontal: 5 },
-  deleteButtonText: { color: '#FF3B30', fontSize: 17, fontFamily: 'Inter-Regular' },
+  deleteButtonText: { color: '#FF3B30', fontSize: 17 }, // Removed fontFamily
   headerSpacer: { width: 60 },
   playerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'black' },
   videoPlayer: { alignSelf: 'stretch', flex: 1 },
